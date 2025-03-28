@@ -1,12 +1,36 @@
 import streamlit as st
 from host import Host
 from enum import Enum, auto
+import time
 
 
-class State(Enum):
-    TopicSelection = auto()
-    GuestInvitation = auto() 
-    DebateStart = auto()
+# Custom CSS to make the app use more screen space
+st.set_page_config(
+    layout="wide",  # Use wide layout
+    initial_sidebar_state="collapsed",  # Collapse sidebar by default
+    page_title="Debate-O-Bot",
+    page_icon="🎪"
+)
+
+# Custom CSS to adjust the main content area
+st.markdown("""
+    <style>
+        .main .block-container {
+            max-width: 95%;
+            padding-top: 2rem;
+        }
+        .stExpander {
+            background-color: #f0f2f6;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        .stChat {
+            background-color: white;
+            border-radius: 0.5rem;
+            padding: 1rem;
+        }
+    </style>
+""", unsafe_allow_html=True)
 
 
 def display_guest_profile(guest, index):
@@ -47,12 +71,47 @@ def display_guest_profile(guest, index):
             st.success("Profile updated!")
 
 
+def display_debate_overview(new_message, name):
+    """Display the debate overview panel."""
+    host = st.session_state.host
+    with st.expander("📊 Debate Overview", expanded=True):
+        # Topic section
+        st.subheader("📌 Topic")
+        st.write(f"**We're discussing:** {host.debate_topic}")
+        
+        # Guests section
+        st.subheader("👥 Guests")
+        for guest in host.guests:
+            st.write(f"- {guest.name} ({guest.occupation})")
+        
+        # Summary section (placeholder for now)
+        st.subheader("📝 Debate Summary")
+        st.write("The debate is just beginning...")
+
+
+def display_message_stream(message, name):
+    """Display a message in a streaming fashion."""
+    with st.container():
+        # Create a message container with the speaker's name
+        st.markdown(f"**{name}:**")
+        message_container = st.empty()
+        
+        # Stream the message character by character
+        displayed_message = ""
+        for char in message:
+            displayed_message += char
+            message_container.markdown(displayed_message)
+            time.sleep(0.005)  # Adjust speed as needed
+
+
 def main():
     st.title("🎪 Debate-O-Bot")
     st.write("Hello there, I'm the host of the talkshow.")
+
+    if not st.session_state.get("state"):
+        st.session_state["state"] = "topic_selection"
     
-    # Initialize session state for host if it doesn't exist
-    if 'host' not in st.session_state:
+    if st.session_state["state"] == "topic_selection":
         topic = st.text_input("What do you want to discuss today?", value="Did Russia invade Ukraine?")
         if st.button("Start Discussion"):
             if topic:
@@ -73,14 +132,40 @@ def main():
                     print("done inviting guests")
                     # Clear the placeholder and rerun to switch to guest display
                     placeholder.empty()
-                    st.experimental_rerun()
+                    st.session_state["state"] = "guest_display"
+                    st.rerun()
             else:
                 st.warning("Please enter a topic to discuss.")
-    else:
+    elif st.session_state["state"] == "guest_display":
         # Display all guests
         print("displaying guests")
         for i, guest in enumerate(st.session_state.host.guests):
             display_guest_profile(guest, i)
+
+        # Add a start debate button
+        if st.button("Start Debate"):
+            st.session_state["state"] = "debate"
+            st.rerun()
+    elif st.session_state["state"] == "debate":
+        host = st.session_state.host
+        
+        # Create two columns for the panels
+        col1, col2 = st.columns([2, 1])
+        
+        with col2:
+            display_debate_overview(None, None)
+
+        with col1:
+            st.subheader("💬 Debate")
+            # Create a container for the debate messages
+            debate_container = st.empty()
+            
+            # Stream the debate messages
+            with debate_container.container():
+                for message, name in host.run_debate():
+                    display_message_stream(message, name)
+        
+
 
 if __name__ == "__main__":
     main() 

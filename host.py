@@ -8,8 +8,8 @@ from pydantic import BaseModel
 import streamlit as st
 from guest import Guest, GuestTemplate
 from llm import load_prompt, generate_structured_response, load_txt_file
-from config import mockup, max_tokens
-
+from config import mockup, max_tokens, model
+import tiktoken
 
 class InviteResponse(BaseModel):
     guests: list[GuestTemplate]
@@ -25,19 +25,12 @@ class Host:
         self.guests = []  # Changed from set to list
         self.conversation: List[Tuple[str, int]] = []  # Stack of messages and their token count, newest first
 
-    def display_message(self, message: str):
-        """Display a message in the appropriate mode."""
-        if self.display_mode == "console":
-            print(message)
-        else:  # streamlit
-            st.write(message)
-
-    def add_message(self, message: str, token_count: int):
+    def add_message(self, message: str):
         """
         Add a message to the conversation stack.
         """
-        self.conversation.insert(0, (message, token_count))  # Insert at beginning since it's a stack (newest first)
-        self.display_message(message)
+        token_count = self.count_tokens(message)
+        self.conversation.insert(0, (message, token_count))  
 
     def retrieve_conversation(self) -> list[str]:
         """
@@ -96,3 +89,40 @@ class Host:
                 guest = Guest(**guest_dict)
                 self.add_guest(guest)  # Using new add_guest method
                 yield guest
+
+    def count_tokens(self, text: str) -> int:
+        """
+        Count the number of tokens in a string based on the OpenAI model being used.
+        
+        Args:
+            text: The text to count tokens for
+            
+        Returns:
+            The number of tokens in the text
+        """
+        # Get the encoding for the model
+        if "gpt-4" in model:
+            encoding = tiktoken.encoding_for_model("gpt-4")
+        elif "gpt-3.5" in model:
+            encoding = tiktoken.encoding_for_model("gpt-3.5-turbo")
+        else:
+            # Default to cl100k_base encoding which is used by most recent models
+            encoding = tiktoken.get_encoding("cl100k_base")
+            
+        # Return token count
+        return len(encoding.encode(text))
+    
+    def run_debate(self) -> Generator[Tuple[str, str], None, None]:
+        """
+        Run the debate.
+        """
+        # Start by introducing the topic and the guests
+        welcome_message = f"Welcome to the debate on {self.debate_topic}."
+        self.add_message(welcome_message)
+        yield welcome_message, "Your host"
+
+        # Introduce the guests
+        for guest in self.guests:
+            self.add_message(str(guest))
+            yield str(guest), "Your host"
+
