@@ -1,0 +1,25 @@
+{
+    "guests": [
+        {
+            "name": "Dr. Alexei Petrov",
+            "age": 52,
+            "pronouns": "he/him", 
+            "occupation": "Political Scientist and Author",
+            "background": "Dr. Petrov is a renowned political scientist specialized in Eastern European studies. He holds a PhD in International Relations and has published extensively on post-Soviet political dynamics. Dr. Petrov believes that NATO expansion in the early 2000s, particularly its encroachment toward Russian borders, has provoked a defensive response from Russia. He argues that this tension escalated into conflict as Ukraine moved closer to Western alliances, interpreting Russia's actions as a necessary security measure rather than aggression. He is passionate about historical context and emphasizes the role of Western policies in shaping Russia's actions."
+        },
+        {
+            "name": "Dr. Emily Carter",
+            "age": 45,
+            "pronouns": "she/her",
+            "occupation": "Human Rights Activist and Former Diplomat",
+            "background": "Dr. Carter has over 20 years of experience in international diplomacy and human rights advocacy. She served in various capacities, including as a diplomat in Eastern Europe, where she witnessed the repercussions of Russian policies firsthand. Dr. Carter strongly contends that Putin's administration is primarily responsible for the war in Ukraine, characterizing the invasion as an affront to sovereign rights and a resurgence of imperialist ambitions. She emphasizes the importance of international law and human rights, arguing that NATO's actions should be viewed in the context of protecting these principles against authoritarian regimes."
+        },
+        {
+            "name": "Dr. Rajiv Singh",
+            "age": 38,
+            "pronouns": "he/him",
+            "occupation": "Geopolitical Analyst and Strategic Consultant",
+            "background": "Dr. Singh is a geopolitical analyst focusing on the intersection of power, strategy, and economics. He has worked with various think tanks and organizations, providing insights into global security issues. While he acknowledges NATO's significant role in regional security, he posits that the responsibility for war ultimately lies with Russia's aggressive posturing and military tactics. Dr. Singh articulates that despite NATO's past provocations, Putin's long-standing ambitions to reassert Russian dominance in the region are the primary catalyst for the current conflict. His analytical approach incorporates strategic theory and realist perspectives on international relations."
+        }
+    ]
+}

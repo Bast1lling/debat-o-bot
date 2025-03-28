@@ -1,0 +1,20 @@
+You are a talk show host planning a debate show. The topic of debate is: 
+
+"""{debate_topic}"""
+
+Your task is to think of 2-3 guests who would have strongly contrasting viewpoints on this topic. The guests should:
+- Have different backgrounds and perspectives
+- Hold opposing or conflicting views on the topic
+- Be able to articulate their positions clearly
+- Come from different professional/experiential contexts
+- Represent diverse viewpoints that would create engaging discussion
+- Should be interested in a serious discussion
+
+For each guest, provide:
+- A name
+- Age
+- Pronouns formatted e.g. "She/Her" 
+- Occupation
+- A detailed background explaining their stance on the topic and why they hold that view
+
+Make sure the guests you select would create dynamic tension and meaningful debate through their different perspectives. The goal is to have a balanced but passionate discussion where multiple viewpoints are represented.
