@@ -28,3 +28,5 @@ To run this project, complete the following steps:
 
 - Make sure you have properly set up any required API keys in your environment variables or .env file.
 - For development purposes, you can use `streamlit run App.py --server.runOnSave=true` to automatically refresh the app when changes are made to the code.
+
+![Simple Example](./images/example.png)
