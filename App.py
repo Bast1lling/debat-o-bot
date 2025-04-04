@@ -142,6 +142,9 @@ def main():
         for i, guest in enumerate(st.session_state.host.guests):
             display_guest_profile(guest, i)
 
+        # Add a field to set the maximum number of debate rounds
+        max_rounds = st.number_input("Number of debate rounds", min_value=1, max_value=20, value=10)
+        st.session_state["max_rounds"] = max_rounds
         # Add a start debate button
         if st.button("Start Debate"):
             st.session_state["state"] = "debate"
@@ -162,7 +165,7 @@ def main():
             
             # Stream the debate messages
             with debate_container.container():
-                for message, name in host.run_debate():
+                for message, name in host.run_debate(max_cycles=st.session_state["max_rounds"]):
                     display_message_stream(message, name)
         
 

@@ -204,7 +204,7 @@ class Host:
         # Put the results in the queue
         result_queue.put(new_messages)
     
-    def run_debate(self) -> Generator[Tuple[str, str], None, None]:
+    def run_debate(self, max_cycles: int = 10) -> Generator[Tuple[str, str], None, None]:
         """
         Run the debate.
         """
@@ -232,7 +232,7 @@ class Host:
         new_messages = result_queue.get()
 
         # Continue the conversation 10 times
-        for _ in range(2):
+        for _ in range(max_cycles):
             # Set off another debate cycle
             debate_cycle_thread = threading.Thread(
                 target=self.run_debate_cycle,
