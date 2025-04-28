@@ -145,7 +145,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-
+.idea/
 # pytype static type analyzer
 .pytype/
 
@@ -154,6 +154,7 @@ cython_debug/
 
 # LLM responses
 responses/
+output/
 
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can

@@ -3,6 +3,8 @@ from host import Host
 from enum import Enum, auto
 import time
 
+from summarizer import summarize_debate
+
 
 # Custom CSS to make the app use more screen space
 st.set_page_config(
@@ -65,7 +67,9 @@ def display_guest_profile(guest, index):
             guest.background = new_background
             
             # Update the guest in session state
-            st.session_state.host.guests[index] = guest
+            st.session_state.host.remove_guest(old_guest)
+            st.session_state.host.add_guest(guest)
+            st.session_state.host.update_guest_embeddings()
             
             # Show a success message
             st.success("Profile updated!")
@@ -81,12 +85,13 @@ def display_debate_overview(new_message, name):
         
         # Guests section
         st.subheader("👥 Guests")
-        for guest in host.guests:
+        for guest in host.guests.values():
             st.write(f"- {guest.name} ({guest.occupation})")
         
         # Summary section (placeholder for now)
-        st.subheader("📝 Debate Summary")
-        st.write("The debate is just beginning...")
+        st.subheader("🎯 Debate Plan")
+        for i, step in enumerate(host.debate_plan, 1):
+            st.write(f"{i}. {step}")
 
 
 def display_message_stream(message, name):
@@ -112,9 +117,12 @@ def main():
         st.session_state["state"] = "topic_selection"
     
     if st.session_state["state"] == "topic_selection":
-        topic = st.text_input("What do you want to discuss today?", value="Did Russia invade Ukraine?")
+        # Add a field to set the maximum number of debate rounds
+        max_rounds = st.number_input("Number of debate rounds", min_value=1, max_value=20, value=10)
+        topic = st.text_input("What do you want to discuss today?", value="Should I pour milk or pour cereal first?")
         if st.button("Start Discussion"):
-            if topic:
+            if topic:  
+                st.session_state["max_rounds"] = max_rounds
                 # Create a panel for the topic
                 with st.expander("📌 Today's Topic", expanded=True):
                     st.write(f"**We're discussing:** {topic}")
@@ -139,12 +147,10 @@ def main():
     elif st.session_state["state"] == "guest_display":
         # Display all guests
         print("displaying guests")
-        for i, guest in enumerate(st.session_state.host.guests):
+        for i, guest in enumerate(st.session_state.host.guests.values()):
             display_guest_profile(guest, i)
 
-        # Add a field to set the maximum number of debate rounds
-        max_rounds = st.number_input("Number of debate rounds", min_value=1, max_value=20, value=10)
-        st.session_state["max_rounds"] = max_rounds
+        st.session_state.host.plan_debate(num_steps=st.session_state["max_rounds"])
         # Add a start debate button
         if st.button("Start Debate"):
             st.session_state["state"] = "debate"
@@ -162,12 +168,19 @@ def main():
             st.subheader("💬 Debate")
             # Create a container for the debate messages
             debate_container = st.empty()
-            
+            messages = []
             # Stream the debate messages
             with debate_container.container():
-                for message, name in host.run_debate(max_cycles=st.session_state["max_rounds"]):
+                for message, name in host.run_debate():
                     display_message_stream(message, name)
-        
+                    messages.append((message, name))
+            st.session_state["messages"] = messages
+            st.session_state["state"] = "debate_overview"
+            st.rerun()
+    elif st.session_state["state"] == "debate_overview":
+        summary = summarize_debate(st.session_state["messages"], st.session_state.host.debate_topic)
+        with st.expander("🎯 Debate Summary", expanded=True):
+            st.write(summary)
 
 
 if __name__ == "__main__":

@@ -18,20 +18,25 @@ api_key = os.getenv("OPENAI_API_KEY")
 client = OpenAI(api_key=api_key)
 
 
-def _save_response(response_text: str, prefix: str = "response") -> None:
+def _save_response(system_prompt: str, response_text: str, prefix: str = "response") -> None:
     """Helper function to save response to a file."""
     # Create responses directory if it doesn't exist
-    responses_dir = "responses"
+    responses_dir = os.path.join("output", "responses")
+    system_dir = os.path.join("output", "system_prompts")
     os.makedirs(responses_dir, exist_ok=True)
+    os.makedirs(system_dir, exist_ok=True)
     
     # Generate timestamped filename
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     filename = f"{prefix}_{timestamp}.txt"
     filepath = os.path.join(responses_dir, filename)
-    
+    system_filepath = os.path.join(system_dir, filename)
+
     # Save the response
     with open(filepath, "w") as file:
         file.write(response_text)
+    with open(system_filepath, "w") as file:
+        file.write(system_prompt)
     print(f"Response saved to {filepath}")
 
 
