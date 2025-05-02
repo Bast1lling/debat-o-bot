@@ -1,4 +1,5 @@
 # debat-o-bot
+See also https://arxiv.org/abs/2402.01788
 
 ## Setup Instructions
 
